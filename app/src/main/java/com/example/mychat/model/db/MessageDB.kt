@@ -5,12 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.mychat.model.entity.MessageForDB
-import com.example.myweather.model.db_service.MessageDAO
 
 @Database(entities = arrayOf(MessageForDB::class), version = 1, exportSchema = false)
 abstract class MessageDB : RoomDatabase() {
 
-    abstract fun MessageDao(): MessageDAO
+    abstract fun messageDAO(): MessageDAO
 
     companion object {
 

@@ -1,6 +1,5 @@
 package com.example.mychat.ui
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.mychat.R
 import com.example.mychat.di.repositoryModule
 import com.example.mychat.model.entity.Message
-import com.example.mychat.model.entity.MessageForDB
 import com.example.mychat.model.entity.PushMessage
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -26,17 +24,18 @@ import org.koin.core.context.startKoin
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()
-    var messageList = mutableListOf<Pair<Int, PushMessage>>(Pair(1, PushMessage(Message("1", "2"), "3")))
+    var messageList = listOf<Pair<Int, Message>>()
     private val messageAdapter = MessageListAdapter()
+    private val recipient = "you"
+    private val yourNikeName = "yourNikeName"
 
-    @SuppressLint("StringFormatInvalid")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         initKoin()
 
-        viewModel.getToken()
+        viewModel.sync()
 
         findViewById<RecyclerView>(R.id.recycler).apply {
             layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, true)
@@ -45,14 +44,14 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.sender).setOnClickListener {
             val message = findViewById<EditText>(R.id.editText).text
-            viewModel.sendMessage(message.toString())
+            viewModel.sendMessage(message.toString(), recipient, yourNikeName)
             message.clear()
         }
 
-        viewModel.liveData1.observe(this, { list ->
-            val newMessageList = mutableListOf<Pair<Int, PushMessage>>(Pair(1, PushMessage(Message("1", list), "3")))
-            messageAdapter.notifyChanges(messageList, newMessageList)
-            messageList = newMessageList
+        viewModel.liveData.observe(this, { list ->
+            Log.d(MainViewModel.TAG + "1", list.toString())
+            messageAdapter.notifyChanges(messageList, list)
+            messageList = list
         })
     }
 
@@ -73,8 +72,8 @@ class MainActivity : AppCompatActivity() {
         override fun getItemCount() = messageList.size
 
         fun notifyChanges(
-            oldList: List<Pair<Int, PushMessage>>,
-            newList: List<Pair<Int, PushMessage>>
+            oldList: List<Pair<Int, Message>>,
+            newList: List<Pair<Int, Message>>
         ) {
             val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
                 override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
@@ -95,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         open inner class BaseMessageHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-            open fun bind(message: PushMessage) {}
+            open fun bind(message: Message) {}
         }
 
         inner class YourMessageHolder(inflater: LayoutInflater, parent: ViewGroup) :
@@ -107,8 +106,8 @@ class MainActivity : AppCompatActivity() {
                 messageTextView = itemView.findViewById(R.id.yourMessage)
             }
 
-            override fun bind(message: PushMessage) {
-                messageTextView?.text = message.data.message
+            override fun bind(message: Message) {
+                messageTextView?.text = message.message
             }
         }
 
@@ -127,8 +126,8 @@ class MainActivity : AppCompatActivity() {
                 messageTextView = itemView.findViewById(R.id.messageAnotherUser)
             }
 
-            override fun bind(message: PushMessage) {
-                messageTextView?.text = message.data.message
+            override fun bind(message: Message) {
+                messageTextView?.text = message.message
             }
         }
     }
