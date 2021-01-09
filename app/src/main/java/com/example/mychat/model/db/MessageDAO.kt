@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.example.mychat.model.entity.Contact
 import com.example.mychat.model.entity.MessageForDB
 import kotlinx.coroutines.flow.Flow
 
@@ -11,6 +12,9 @@ import kotlinx.coroutines.flow.Flow
 interface MessageDAO {
     @Query("select * from messages")
     fun getAll(): Flow<List<MessageForDB>>
+
+    @Query("select * from contacts")
+    fun getContacts(): Flow<List<Contact>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(forecast: List<MessageForDB>)
