@@ -35,4 +35,5 @@ class DBService(private val db: MessageDB) {
     }
 
     fun getData() = db.messageDAO().getAll()
+    fun deleteData() = db.messageDAO().deleteAll()
 }

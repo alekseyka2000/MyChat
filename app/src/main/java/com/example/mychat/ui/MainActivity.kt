@@ -41,6 +41,10 @@ class MainActivity : AppCompatActivity() {
             message.clear()
         }
 
+        findViewById<ImageView>(R.id.deleteChatButton).setOnClickListener {
+            viewModel.deleteChat()
+        }
+
         viewModel.liveData.observe(this, { list ->
             messageAdapter.notifyChanges(messageList, list)
             messageList = list

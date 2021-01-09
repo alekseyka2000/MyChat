@@ -55,6 +55,8 @@ class MessageService(private val dbService: DBService) {
         })
     }
 
+    fun deleteChat() = CoroutineScope(Dispatchers.IO).launch { dbService.deleteData()}
+
     companion object {
         const val TAG = "FirebaseService"
     }

@@ -30,6 +30,8 @@ class MainViewModel(private val messageService: MessageService) : ViewModel() {
     fun sendMessage(message: String, recipient: String, yourNikeName: String) =
         messageService.sendMessage(message, recipient, yourNikeName)
 
+    fun deleteChat() = messageService.deleteChat()
+
     companion object {
         const val TAG = "FirebaseService"
     }

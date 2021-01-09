@@ -8,7 +8,6 @@ import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val repositoryModule = module {
-
     single { MessageDB.getDatabase(get())}
     viewModel { MainViewModel(messageService= get()) }
     single { DBService(db = get()) }

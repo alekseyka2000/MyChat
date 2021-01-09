@@ -3,4 +3,5 @@
     <string name="msg_token_fmt">Token</string>
     <string name="enter_message">Enter message</string>
     <string name="sender">Sender</string>
+    <string name="delete_chat_message">Delete chat message</string>
 </resources>
