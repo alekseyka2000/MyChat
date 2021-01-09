@@ -1,7 +1,6 @@
 package com.example.mychat.ui
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +12,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.mychat.R
-import com.example.mychat.di.repositoryModule
 import com.example.mychat.model.entity.Message
-import com.example.mychat.model.entity.PushMessage
-import org.koin.android.ext.koin.androidContext
-import org.koin.android.ext.koin.androidLogger
 import org.koin.android.viewmodel.ext.android.viewModel
-import org.koin.core.context.startKoin
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,12 +27,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        initKoin()
-
         viewModel.sync()
 
         findViewById<RecyclerView>(R.id.recycler).apply {
-            layoutManager = LinearLayoutManager(this.context, LinearLayoutManager.VERTICAL, true)
+            layoutManager = LinearLayoutManager(this.context)
+            (layoutManager as LinearLayoutManager).stackFromEnd = true
             adapter = messageAdapter
         }
 
@@ -49,7 +42,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         viewModel.liveData.observe(this, { list ->
-            Log.d(MainViewModel.TAG + "1", list.toString())
             messageAdapter.notifyChanges(messageList, list)
             messageList = list
         })
@@ -76,16 +68,11 @@ class MainActivity : AppCompatActivity() {
             newList: List<Pair<Int, Message>>
         ) {
             val diff = DiffUtil.calculateDiff(object : DiffUtil.Callback() {
-                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-                    return oldList[oldItemPosition].second == newList[newItemPosition].second
-                }
+                override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                    oldList[oldItemPosition].second == newList[newItemPosition].second
 
-                override fun areContentsTheSame(
-                    oldItemPosition: Int,
-                    newItemPosition: Int
-                ): Boolean {
-                    return oldList[oldItemPosition] == newList[newItemPosition]
-                }
+                override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int) =
+                    oldList[oldItemPosition] == newList[newItemPosition]
 
                 override fun getOldListSize() = oldList.size
                 override fun getNewListSize() = newList.size
@@ -100,43 +87,21 @@ class MainActivity : AppCompatActivity() {
         inner class YourMessageHolder(inflater: LayoutInflater, parent: ViewGroup) :
             BaseMessageHolder(inflater.inflate(R.layout.your_message_layout, parent, false)) {
 
-            private var messageTextView: TextView? = null
-
-            init {
-                messageTextView = itemView.findViewById(R.id.yourMessage)
-            }
+            private var messageTextView = itemView.findViewById<TextView>(R.id.yourMessage)
 
             override fun bind(message: Message) {
                 messageTextView?.text = message.message
             }
         }
 
-        inner class AnotherUserMessageHolder(inflater: LayoutInflater, parent: ViewGroup) :
-            BaseMessageHolder(
-                inflater.inflate(
-                    R.layout.another_user_message_layout,
-                    parent,
-                    false
-                )
-            ) {
+        inner class AnotherUserMessageHolder(i: LayoutInflater, p: ViewGroup) :
+            BaseMessageHolder(i.inflate(R.layout.another_user_message_layout, p, false)) {
 
-            private var messageTextView: TextView? = null
-
-            init {
-                messageTextView = itemView.findViewById(R.id.messageAnotherUser)
-            }
+            private var messageTextView = itemView.findViewById<TextView>(R.id.messageAnotherUser)
 
             override fun bind(message: Message) {
-                messageTextView?.text = message.message
+                messageTextView.text = message.message
             }
-        }
-    }
-
-    private fun initKoin() {
-        startKoin {
-            androidLogger()
-            androidContext(this@MainActivity)
-            modules(repositoryModule)
         }
     }
 }

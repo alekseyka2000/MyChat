@@ -11,8 +11,8 @@ class DBService(private val db: MessageDB) {
             listOf(
                 MessageForDB(
                     id = UUID.randomUUID().toString(),
-                    to = message.to,
-                    from = message.from,
+                    to = message.data["recipient"],
+                    from = message.data["sender"],
                     title = message.data["title"],
                     message = message.data["message"]
                 )
@@ -20,12 +20,12 @@ class DBService(private val db: MessageDB) {
         )
     }
 
-    fun insertData(login: String, yourNikeName: String, message: String){
+    fun insertData(login: String, yourNikeName: String, message: String, recipient: String){
         db.messageDAO().insert(
             listOf(
                 MessageForDB(
                     id = UUID.randomUUID().toString(),
-                    to = login,// recipient,
+                    to =  recipient,
                     from = login,
                     title = yourNikeName,
                     message = message
