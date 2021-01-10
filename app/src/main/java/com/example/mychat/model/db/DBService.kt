@@ -1,5 +1,8 @@
 package com.example.mychat.model.db
 
+import android.util.Log
+import com.example.mychat.model.MessageService
+import com.example.mychat.model.YouContactHolder
 import com.example.mychat.model.entity.Contact
 import com.example.mychat.model.entity.MessageForDB
 import com.google.firebase.messaging.RemoteMessage
@@ -35,7 +38,7 @@ class DBService(private val db: MessageDB) {
         )
     }
 
-    fun getData() = db.messageDAO().getAll()
+    fun getData(recipient: String) = db.messageDAO().getAll(recipient, YouContactHolder.youLogin)
     fun deleteData() = db.messageDAO().deleteAll()
 
     fun getContactList() = db.messageDAO().getContacts()

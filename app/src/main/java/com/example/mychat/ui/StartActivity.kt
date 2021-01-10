@@ -94,7 +94,7 @@ class StartActivity : AppCompatActivity() {
         })
     }
 
-    fun  onItemClick(contact: Contact) {
+    fun onItemClick(contact: Contact) {
         startActivity(MainActivity.getIntent(this, youName, contact.contact, contact.nickname))
     }
 
@@ -131,22 +131,26 @@ class StartActivity : AppCompatActivity() {
                 name = it.text.split("_separator_")[1]
             }
         }
-        codeScanner.errorCallback = ErrorCallback{
+        codeScanner.errorCallback = ErrorCallback {
             runOnUiThread {
                 Log.d(TAG, "Camera initialization error: ${it.message}")
-                Toast.makeText(this, "Camera initialization error: ${it.message}",
-                    Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this, "Camera initialization error: ${it.message}",
+                    Toast.LENGTH_LONG
+                ).show()
             }
         }
 
-        scannerView?.setOnClickListener{ codeScanner.startPreview() }
+        scannerView?.setOnClickListener { codeScanner.startPreview() }
 
         MaterialAlertDialogBuilder(this)
             .setTitle(resources.getString(R.string.set_name))
             .setView(scannerLayout)
             .setPositiveButton(resources.getString(R.string.positive_button_text)) { _, _ ->
-                startViewModel.addNewContact(name, contact)
-                Toast.makeText(this, "You add contact: $name  $contact", Toast.LENGTH_LONG).show()
+                if (!startViewModel.checkContact(contact)) {
+                    startViewModel.addNewContact(name, contact)
+                    Toast.makeText(this, "You add contact: $name", Toast.LENGTH_LONG).show()
+                }
                 codeScanner.releaseResources()
             }
             .setNegativeButton(resources.getString(R.string.negative_button_text)) { dialog, _ ->
@@ -259,7 +263,11 @@ class StartActivity : AppCompatActivity() {
         )
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             RECORD_REQUEST_CODE -> {
                 if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {

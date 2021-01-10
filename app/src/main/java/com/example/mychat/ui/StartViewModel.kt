@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mychat.model.ContactsProvider
 import com.example.mychat.model.entity.Contact
-import com.example.mychat.model.message_api.YouContactHolder
+import com.example.mychat.model.YouContactHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -20,7 +20,10 @@ class StartViewModel(private val contactsProvider: ContactsProvider) : ViewModel
     fun fetchContactsList() {
         CoroutineScope(Dispatchers.IO).launch {
             contactsProvider.fetchContactsList()
-                .collect { withContext(Dispatchers.Main) { contactsMutableLiveData.value = it } }
+                .collect { withContext(Dispatchers.Main) {
+                    contactsMutableLiveData.value = it
+                    contactsProvider.contactList = it
+                } }
         }
     }
 
@@ -33,4 +36,5 @@ class StartViewModel(private val contactsProvider: ContactsProvider) : ViewModel
     }
 
     fun getYouContact() = YouContactHolder.youLogin
+    fun checkContact(contact: String) = contactsProvider.checkContact(contact)
 }

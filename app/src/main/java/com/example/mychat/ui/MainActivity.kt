@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<Toolbar>(R.id.toolbar).subtitle = recipientName
 
-        viewModel.sync()
+        viewModel.sync(recipient)
 
         findViewById<RecyclerView>(R.id.recycler).apply {
             layoutManager = LinearLayoutManager(this.context)

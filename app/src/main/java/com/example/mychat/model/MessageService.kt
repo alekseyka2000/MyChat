@@ -5,7 +5,6 @@ import com.example.mychat.model.db.DBService
 import com.example.mychat.model.entity.Message
 import com.example.mychat.model.entity.PushMessage
 import com.example.mychat.model.message_api.MessageService
-import com.example.mychat.model.message_api.YouContactHolder
 import com.google.firebase.messaging.RemoteMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class MessageService(private val dbService: DBService) {
 
-    fun syncMessagesFromDB() = dbService.getData().map {
+    fun syncMessagesFromDB(recipient: String) = dbService.getData(recipient).map {
         it.map { message ->
             val from = if (message.from != YouContactHolder.youLogin) 1 else 2
             Pair(from, Message(message.message,"1", "2", message.title))
@@ -23,7 +22,7 @@ class MessageService(private val dbService: DBService) {
 
     fun getMessage(message: RemoteMessage) = CoroutineScope(Dispatchers.IO).launch {
         if (message.data["sender"] != YouContactHolder.youLogin) dbService.insertData(message)
-        Log.d(TAG, "---GET NEW MESSAGE---")
+        Log.d(TAG, "---GET NEW MESSAGE---${message.data["title"]}    ${message.data["sender"]}")
     }
 
     fun sendMessage(message: String, yourNikeName: String, recipient: String) =

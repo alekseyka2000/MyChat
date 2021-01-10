@@ -1,7 +1,6 @@
-package com.example.mychat.model.message_api
+package com.example.mychat.model
 
 import android.util.Log
-import com.example.mychat.model.MessageService
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
 

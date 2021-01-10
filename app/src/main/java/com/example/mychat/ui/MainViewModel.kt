@@ -18,9 +18,9 @@ class MainViewModel(private val messageService: MessageService) : ViewModel() {
     private val mutableLiveData = MutableLiveData<List<Pair<Int, Message>>>()
     val liveData: LiveData<List<Pair<Int, Message>>> = mutableLiveData
 
-    fun sync() {
+    fun sync(recipient: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            messageService.syncMessagesFromDB()
+            messageService.syncMessagesFromDB(recipient)
                 .catch { exception -> Log.d(TAG, exception.message.toString()) }
                 .collect { withContext(Dispatchers.Main) { mutableLiveData.value = it } }
         }

@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface MessageDAO {
-    @Query("select * from messages")
-    fun getAll(): Flow<List<MessageForDB>>
+    @Query("select * from messages where sender = :recipient or sender = :you")
+    fun getAll(recipient: String, you: String): Flow<List<MessageForDB>>
 
     @Query("select * from contacts")
     fun getContacts(): Flow<List<Contact>>
