@@ -20,15 +20,14 @@ class MainViewModel(private val messageService: MessageService) : ViewModel() {
 
     fun sync() {
         CoroutineScope(Dispatchers.IO).launch {
-            messageService.getToken()
             messageService.syncMessagesFromDB()
                 .catch { exception -> Log.d(TAG, exception.message.toString()) }
                 .collect { withContext(Dispatchers.Main) { mutableLiveData.value = it } }
         }
     }
 
-    fun sendMessage(message: String, recipient: String, yourNikeName: String) =
-        messageService.sendMessage(message, recipient, yourNikeName)
+    fun sendMessage(message: String, yourNikeName:String, recipient: String) =
+        messageService.sendMessage(message, yourNikeName, recipient)
 
     fun deleteChat() = messageService.deleteChat()
 

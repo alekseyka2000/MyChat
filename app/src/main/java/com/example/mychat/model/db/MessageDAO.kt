@@ -22,4 +22,10 @@ interface MessageDAO {
     @Query("DELETE FROM messages")
     fun deleteAll()
 
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    fun insertContact(contact: Contact)
+
+    @Query("DELETE FROM contacts")
+    fun deleteAllContacts()
+
 }

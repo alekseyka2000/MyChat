@@ -1,5 +1,7 @@
 package com.example.mychat.ui
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,12 +23,19 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModel()
     var messageList = listOf<Pair<Int, Message>>()
     private val messageAdapter = MessageListAdapter()
-    private val recipient = "you"
-    private val yourNikeName = "yourNikeName"
+    private lateinit var recipient: String
+    private lateinit var recipientName: String
+    private lateinit var yourNikeName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        yourNikeName = intent.getStringExtra(NAME_KEY) ?: ""
+        recipient = intent.getStringExtra(CONTACT_KEY) ?: ""
+        recipientName = intent.getStringExtra(CONTACT_NAME_KEY) ?: ""
+
+        findViewById<Toolbar>(R.id.toolbar).subtitle = recipientName
 
         viewModel.sync()
 
@@ -37,7 +47,7 @@ class MainActivity : AppCompatActivity() {
 
         findViewById<ImageView>(R.id.sender).setOnClickListener {
             val message = findViewById<EditText>(R.id.editText).text
-            viewModel.sendMessage(message.toString(), recipient, yourNikeName)
+            viewModel.sendMessage(message.toString(), yourNikeName, recipient)
             message.clear()
         }
 
@@ -107,5 +117,16 @@ class MainActivity : AppCompatActivity() {
                 messageTextView.text = message.message
             }
         }
+    }
+
+    companion object {
+        private const val NAME_KEY = "Name"
+        private const val CONTACT_NAME_KEY = "Contact name"
+        private const val CONTACT_KEY = "Contact"
+
+        @JvmStatic
+        fun getIntent(context: Context, name: String, contact: String, contactName: String) =
+            Intent(context, MainActivity::class.java).putExtra(NAME_KEY, name)
+                .putExtra(CONTACT_KEY, contact).putExtra(CONTACT_NAME_KEY, contactName)
     }
 }

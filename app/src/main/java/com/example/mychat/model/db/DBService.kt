@@ -1,5 +1,6 @@
 package com.example.mychat.model.db
 
+import com.example.mychat.model.entity.Contact
 import com.example.mychat.model.entity.MessageForDB
 import com.google.firebase.messaging.RemoteMessage
 import java.util.UUID
@@ -38,4 +39,7 @@ class DBService(private val db: MessageDB) {
     fun deleteData() = db.messageDAO().deleteAll()
 
     fun getContactList() = db.messageDAO().getContacts()
+    fun insertContact(name: String, contact: String) { db.messageDAO().insertContact(Contact( UUID.randomUUID().toString(), name, contact)) }
+    fun deleteAllContacts() { db.messageDAO().deleteAllContacts() }
+
 }

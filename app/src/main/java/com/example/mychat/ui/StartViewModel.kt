@@ -5,13 +5,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.mychat.model.ContactsProvider
 import com.example.mychat.model.entity.Contact
+import com.example.mychat.model.message_api.YouContactHolder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.koin.android.viewmodel.compat.ScopeCompat
 
 class StartViewModel(private val contactsProvider: ContactsProvider) : ViewModel() {
 
@@ -24,4 +23,14 @@ class StartViewModel(private val contactsProvider: ContactsProvider) : ViewModel
                 .collect { withContext(Dispatchers.Main) { contactsMutableLiveData.value = it } }
         }
     }
+
+    fun addNewContact(name: String, contact: String) {
+        CoroutineScope(Dispatchers.IO).launch { contactsProvider.addContactToDB(name, contact) }
+    }
+
+    fun deleteAllContact() {
+        CoroutineScope(Dispatchers.IO).launch { contactsProvider.deleteAllContacts() }
+    }
+
+    fun getYouContact() = YouContactHolder.youLogin
 }
